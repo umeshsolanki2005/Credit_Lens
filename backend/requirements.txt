@@ -1,0 +1,13 @@
+fastapi
+uvicorn
+pandas
+numpy
+xgboost
+shap
+scikit-learn
+joblib
+faker
+python-jose
+passlib
+psycopg2-binary
+python-multipart
