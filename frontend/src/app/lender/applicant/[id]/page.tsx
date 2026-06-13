@@ -28,94 +28,101 @@ export default function ApplicantPage() {
     fetchApplicantDetails();
   }, [params.id]);
 
-  if (loading) return <div className="flex justify-center p-12">Loading applicant details...</div>;
-  if (!applicant) return <div>Applicant not found</div>;
+  if (loading) return <div className="flex justify-center p-12 text-[#64748B]">Loading applicant details...</div>;
+  if (!applicant) return <div className="text-[#64748B] p-12 text-center">Applicant not found</div>;
+
+  const getRiskBadge = (tier: string) => {
+    switch (tier) {
+      case 'Green': return 'badge badge-success';
+      case 'Yellow': return 'badge badge-warning';
+      case 'Red': return 'badge badge-danger';
+      default: return 'badge';
+    }
+  };
 
   return (
-    <div className="max-w-4xl mx-auto animate-fade-in">
-      <Link href="/lender/dashboard" className="inline-flex items-center text-sm font-medium text-secondary-foreground/60 hover:text-accent mb-8 transition-colors">
+    <div className="space-y-8 animate-fade-in">
+      <Link href="/lender/dashboard" className="inline-flex items-center text-xs font-black uppercase tracking-wider text-[#64748B] hover:text-[#320070] transition-colors">
         <ArrowLeft className="mr-2 h-4 w-4" />
         Back to Dashboard
       </Link>
 
-      <div className="card glass mb-8">
-        <div className="flex flex-col md:flex-row gap-6 items-start md:items-center justify-between border-b border-border pb-6">
+      <div className="card bg-white border-2 border-[#320070] shadow-[6px_6px_0px_0px_#320070] p-8">
+        <div className="flex flex-col md:flex-row gap-6 items-start md:items-center justify-between border-b-2 border-[#f8f7f5] pb-6">
           <div className="flex items-center gap-4">
-            <div className="w-16 h-16 rounded-full bg-secondary flex items-center justify-center text-2xl font-bold text-secondary-foreground">
+            <div className="w-14 h-14 rounded border-2 border-[#320070] bg-[#ecebe8] flex items-center justify-center text-xl font-black text-[#320070] shadow-[2px_2px_0px_0px_rgba(0,0,0,0.15)]">
               {applicant.name.charAt(0)}
             </div>
             <div>
-              <h1 className="text-2xl font-bold">{applicant.name}</h1>
-              <p className="text-secondary-foreground/70">{applicant.email}</p>
+              <h1 className="text-2xl font-black uppercase tracking-tight text-[#320070]">{applicant.name}</h1>
+              <p className="text-[#64748B] text-xs font-bold uppercase tracking-wider">{applicant.email}</p>
             </div>
           </div>
           
-          <div className="flex flex-col items-end gap-2">
-            <div className="text-sm text-secondary-foreground/70">CreditLens Score</div>
+          <div className="flex flex-col items-end gap-1">
+            <p className="text-[10px] font-extrabold uppercase tracking-wider text-[#64748B]">CreditLens Score</p>
             <div className="flex items-center gap-3">
-              <span className={`px-3 py-1 text-sm font-bold rounded-full border ${
-                applicant.risk_tier === 'Green' ? 'bg-accent/10 text-accent border-accent/20' : 'bg-yellow-500/10 text-yellow-500 border-yellow-500/20'
-              }`}>
+              <span className={getRiskBadge(applicant.risk_tier)}>
                 {applicant.risk_tier} Risk
               </span>
-              <span className="text-4xl font-extrabold">{applicant.score}</span>
+              <span className="text-4xl font-black text-[#320070]">{applicant.score}</span>
             </div>
           </div>
         </div>
 
         <div className="grid md:grid-cols-2 gap-8 pt-6">
           <div>
-            <h3 className="font-medium text-secondary-foreground/70 mb-4 flex items-center gap-2">
-              <User size={18} /> Borrower Profile
+            <h3 className="font-black text-[#320070] mb-4 flex items-center gap-2 text-xs uppercase tracking-widest border-b border-[#ecebe8] pb-2">
+              <User size={14} /> Borrower Profile
             </h3>
             <div className="space-y-4">
               <div>
-                <p className="text-sm text-secondary-foreground/60">Reported Income</p>
-                <p className="font-medium">{applicant.income}</p>
+                <p className="text-[10px] font-extrabold uppercase tracking-wider text-[#64748B] mb-0.5">Reported Income</p>
+                <p className="font-bold text-sm text-[#320070]">₹{applicant.income.toLocaleString()}</p>
               </div>
               <div>
-                <p className="text-sm text-secondary-foreground/60">Employment Type</p>
-                <p className="font-medium">{applicant.employment}</p>
+                <p className="text-[10px] font-extrabold uppercase tracking-wider text-[#64748B] mb-0.5">Employment Type</p>
+                <p className="font-bold text-sm text-[#320070] uppercase tracking-wider">{applicant.employment}</p>
               </div>
               <div>
-                <p className="text-sm text-secondary-foreground/60">Data Sources Verified</p>
+                <p className="text-[10px] font-extrabold uppercase tracking-wider text-[#64748B] mb-0.5">Data Sources Verified</p>
                 <div className="flex gap-2 mt-1">
-                  <span className="inline-flex items-center gap-1 px-2 py-1 bg-secondary/50 rounded text-xs"><CheckCircle2 size={12} className="text-accent" /> UPI History</span>
-                  <span className="inline-flex items-center gap-1 px-2 py-1 bg-secondary/50 rounded text-xs"><CheckCircle2 size={12} className="text-accent" /> Telecom</span>
+                  <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-[#f8f7f5] border-2 border-[#320070] rounded-sm text-[10px] font-bold uppercase tracking-wider text-[#320070]"><CheckCircle2 size={12} className="text-[#059669]" /> UPI History</span>
+                  <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-[#f8f7f5] border-2 border-[#320070] rounded-sm text-[10px] font-bold uppercase tracking-wider text-[#320070]"><CheckCircle2 size={12} className="text-[#059669]" /> Telecom</span>
                 </div>
               </div>
             </div>
           </div>
 
-          <div className="bg-background rounded-xl p-6 border border-border">
-            <h3 className="font-bold mb-4 flex items-center gap-2">
-              <ShieldCheck size={18} className="text-accent" /> ML Underwriting Decision
+          <div className="bg-[#f8f7f5] rounded p-6 border-2 border-[#320070] shadow-[4px_4px_0px_0px_#320070]">
+            <h3 className="font-black text-[#320070] mb-4 flex items-center gap-2 text-xs uppercase tracking-wider border-b border-[#320070] pb-2">
+              <ShieldCheck size={16} className="text-[#7100eb]" /> Underwriting Decision
             </h3>
             
             <div className="space-y-4">
               <div>
-                <div className="flex items-center gap-2 text-sm font-medium mb-2 text-accent">
-                  <TrendingUp size={16} /> Positive Signals (Helping Score)
+                <div className="flex items-center gap-2 text-xs font-black uppercase tracking-wider mb-2 text-[#059669]">
+                  <TrendingUp size={14} /> Positive Signals (Helping)
                 </div>
                 <ul className="space-y-2">
                   {applicant.explainData.helping.map((h: any, i: number) => (
-                    <li key={i} className="text-sm flex justify-between bg-secondary/30 px-3 py-2 rounded">
-                      <span>{h.feature}</span>
-                      <span className="font-mono text-accent">{h.impact}</span>
+                    <li key={i} className="text-[10px] font-semibold flex justify-between bg-white px-3 py-2 rounded-sm border border-[#320070]">
+                      <span className="text-[#320070] font-black uppercase tracking-wider">{h.feature.replace(/_/g, ' ')}</span>
+                      <span className="font-mono text-[#059669] font-black">{h.impact}</span>
                     </li>
                   ))}
                 </ul>
               </div>
 
               <div>
-                <div className="flex items-center gap-2 text-sm font-medium mb-2 text-danger mt-4">
-                  <TrendingDown size={16} /> Risk Factors (Hurting Score)
+                <div className="flex items-center gap-2 text-xs font-black uppercase tracking-wider mb-2 text-[#EF476F] mt-4">
+                  <TrendingDown size={14} /> Risk Factors (Hurting)
                 </div>
                 <ul className="space-y-2">
                   {applicant.explainData.hurting.map((h: any, i: number) => (
-                    <li key={i} className="text-sm flex justify-between bg-secondary/30 px-3 py-2 rounded">
-                      <span>{h.feature}</span>
-                      <span className="font-mono text-danger">+{h.impact}</span>
+                    <li key={i} className="text-[10px] font-semibold flex justify-between bg-white px-3 py-2 rounded-sm border border-[#EF476F]">
+                      <span className="text-[#320070] font-black uppercase tracking-wider">{h.feature.replace(/_/g, ' ')}</span>
+                      <span className="font-mono text-[#EF476F] font-black">+{h.impact}</span>
                     </li>
                   ))}
                 </ul>
@@ -125,11 +132,11 @@ export default function ApplicantPage() {
         </div>
       </div>
 
-      <div className="flex justify-end gap-4">
-        <button className="btn btn-secondary glass text-foreground hover:bg-secondary/80">
-          <Download size={18} /> Download Full Report
+      <div className="flex justify-end gap-4 border-t border-[#ecebe8] pt-6">
+        <button className="btn btn-outline text-xs px-6 py-4 border-2 border-[#320070] text-[#320070] hover:bg-[#320070] hover:text-white">
+          <Download size={16} /> Download Full Report
         </button>
-        <button className="btn bg-accent text-white hover:bg-accent/90">
+        <button className="btn btn-accent text-xs px-6 py-4 shadow-[3px_3px_0px_0px_#320070] hover:bg-[#7100eb] hover:text-white">
           Initiate Loan Offer
         </button>
       </div>

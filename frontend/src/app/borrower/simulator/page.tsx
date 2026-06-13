@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import api from '@/lib/api';
-import { Calculator, CheckCircle2, XCircle, ArrowRight, Loader2 } from 'lucide-react';
+import { CheckCircle2, XCircle, ArrowRight, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 
 export default function SimulatorPage() {
@@ -40,26 +40,21 @@ export default function SimulatorPage() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto animate-fade-in">
-      <div className="flex items-center gap-4 mb-8">
-        <div className="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center text-primary">
-          <Calculator size={24} />
-        </div>
-        <div>
-          <h1 className="text-3xl font-bold">Loan Simulator</h1>
-          <p className="text-secondary-foreground/70 text-sm">See what loans you qualify for today</p>
-        </div>
-      </div>
+    <div className="space-y-8 animate-fade-in">
+      <header className="border-b-2 border-[#320070] pb-4">
+        <h1 className="text-3xl font-black uppercase tracking-tight text-[#320070]">Loan Simulator</h1>
+        <p className="text-[#64748B] text-xs font-bold uppercase tracking-wider mt-1">See what loans you qualify for today</p>
+      </header>
 
-      <div className="grid md:grid-cols-2 gap-8">
-        <div className="card glass h-fit">
+      <div className="grid md:grid-cols-2 gap-6">
+        <div className="card bg-white border-2 border-[#320070] shadow-[6px_6px_0px_0px_#320070] p-6 h-fit">
           <form onSubmit={handleSimulate} className="space-y-6">
             <div>
-              <label className="block text-sm font-medium mb-2">Loan Amount Requested (₹)</label>
+              <label className="label">Loan Amount Requested (₹)</label>
               <input
                 type="number"
                 required
-                className="input text-lg"
+                className="input text-sm font-bold text-[#320070]"
                 value={formData.loanAmnt}
                 onChange={(e) => setFormData({ ...formData, loanAmnt: Number(e.target.value) })}
               />
@@ -68,16 +63,16 @@ export default function SimulatorPage() {
                 min="10000" 
                 max="500000" 
                 step="5000"
-                className="w-full mt-4 accent-primary"
+                className="w-full mt-4 accent-[#7100eb]"
                 value={formData.loanAmnt}
                 onChange={(e) => setFormData({ ...formData, loanAmnt: Number(e.target.value) })}
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-2">Tenure (Months)</label>
+              <label className="label">Tenure (Months)</label>
               <select 
-                className="input text-lg"
+                className="input text-sm font-bold text-[#320070]"
                 value={formData.term}
                 onChange={(e) => setFormData({ ...formData, term: Number(e.target.value) })}
               >
@@ -89,30 +84,32 @@ export default function SimulatorPage() {
               </select>
             </div>
 
-            <button type="submit" className="btn btn-primary w-full py-3" disabled={isLoading}>
-              {isLoading ? <Loader2 className="animate-spin" /> : 'Check Eligibility'}
+            <button type="submit" className="btn btn-primary w-full py-4 shadow-[3px_3px_0px_0px_rgba(0,0,0,0.15)] flex justify-center hover:bg-[#7100eb]" disabled={isLoading}>
+              {isLoading ? <Loader2 className="animate-spin text-white" /> : 'Check Eligibility'}
             </button>
           </form>
         </div>
 
         <div>
           {result ? (
-            <div className="card glass h-full flex flex-col justify-center items-center text-center animate-fade-in space-y-4">
+            <div className={`card bg-white border-2 border-[#320070] p-8 h-full flex flex-col justify-center items-center text-center animate-fade-in space-y-4 ${
+              result.eligible ? 'shadow-[6px_6px_0px_0px_#95f4a0]' : 'shadow-[6px_6px_0px_0px_#EF476F]'
+            }`}>
               {result.eligible ? (
                 <>
-                  <div className="w-20 h-20 rounded-full bg-accent/20 flex items-center justify-center text-accent mb-2">
-                    <CheckCircle2 size={40} />
+                  <div className="w-16 h-16 rounded border-2 border-[#320070] bg-[#95f4a0] flex items-center justify-center text-[#320070] mb-2 shadow-[2px_2px_0px_0px_rgba(0,0,0,0.15)]">
+                    <CheckCircle2 size={32} />
                   </div>
-                  <h3 className="text-2xl font-bold text-accent">You are Eligible!</h3>
-                  <p className="text-secondary-foreground/70">Based on your CreditLens score.</p>
+                  <h3 className="text-2xl font-black uppercase tracking-tight text-[#06382e]">You are Eligible!</h3>
+                  <p className="text-xs font-bold uppercase tracking-wider text-[#64748B]">Based on your CreditLens score.</p>
                   
-                  <div className="w-full bg-secondary/30 rounded-xl p-4 mt-4 border border-border">
-                    <p className="text-sm text-secondary-foreground/60 mb-1">Approved Amount</p>
-                    <p className="text-3xl font-bold">₹{result.recommended_amount.toLocaleString()}</p>
+                  <div className="w-full bg-[#f8f7f5] rounded border-2 border-[#320070] p-4 mt-4">
+                    <p className="text-[10px] font-extrabold uppercase tracking-wider text-[#64748B] mb-1">Approved Amount</p>
+                    <p className="text-3xl font-black text-[#320070]">₹{result.recommended_amount.toLocaleString()}</p>
                   </div>
                   
                   {result.recommended_amount < formData.loanAmnt && (
-                     <p className="text-sm text-yellow-500 mt-2 mb-4">
+                     <p className="text-[10px] font-black uppercase tracking-wider text-[#d97706] mt-2 mb-4">
                        Note: Approved amount is lower than requested due to risk parameters.
                      </p>
                   )}
@@ -126,38 +123,38 @@ export default function SimulatorPage() {
                         alert('Application submitted or already exists.');
                       }
                     }}
-                    className="btn btn-primary w-full py-2 mt-4"
+                    className="btn btn-accent w-full py-4 text-xs font-black uppercase tracking-wider mt-4 shadow-[3px_3px_0px_0px_rgba(50,0,112,0.15)]"
                   >
                     Submit Application to Lenders
                   </button>
                 </>
               ) : (
                 <>
-                  <div className="w-20 h-20 rounded-full bg-danger/20 flex items-center justify-center text-danger mb-2">
-                    <XCircle size={40} />
+                  <div className="w-16 h-16 rounded border-2 border-[#EF476F] bg-[#EF476F]/10 flex items-center justify-center text-[#EF476F] mb-2">
+                    <XCircle size={32} />
                   </div>
-                  <h3 className="text-2xl font-bold text-danger">Not Eligible Yet</h3>
-                  <p className="text-secondary-foreground/70">
+                  <h3 className="text-2xl font-black uppercase tracking-tight text-[#EF476F]">Not Eligible Yet</h3>
+                  <p className="text-xs font-bold uppercase tracking-wider text-[#64748B]">
                     Your current profile risk is too high for this amount.
                   </p>
-                  <div className="w-full bg-secondary/30 rounded-xl p-4 mt-4 border border-border">
-                    <p className="text-sm text-secondary-foreground/60 mb-1">Recommended Action</p>
-                    <p className="font-medium">Follow your 3-month roadmap plan to improve your eligibility.</p>
+                  <div className="w-full bg-[#f8f7f5] rounded border-2 border-[#EF476F] p-4 mt-4 text-left">
+                    <p className="text-[10px] font-extrabold uppercase tracking-wider text-[#EF476F] mb-1">Recommended Action</p>
+                    <p className="text-xs font-bold text-[#320070]">Follow your 3-month roadmap plan to improve your eligibility.</p>
                   </div>
                 </>
               )}
             </div>
           ) : (
-            <div className="h-full border-2 border-dashed border-border rounded-xl flex items-center justify-center bg-card/30 text-secondary-foreground/40 p-8 text-center">
+            <div className="h-full border-2 border-dashed border-[#7100eb] rounded flex items-center justify-center bg-[#f8f7f5] text-[#64748B] p-8 text-center text-xs font-bold uppercase tracking-wider leading-relaxed">
               Adjust the parameters and click "Check Eligibility" to see your results.
             </div>
           )}
         </div>
       </div>
 
-      <div className="flex justify-end pt-8">
-        <Link href="/borrower/monitor" className="btn btn-secondary text-lg px-8 py-3">
-          Go to Health Monitor <ArrowRight size={20} />
+      <div className="flex justify-end pt-4 border-t border-[#ecebe8]">
+        <Link href="/borrower/monitor" className="btn btn-outline px-6 py-4 text-xs font-bold uppercase tracking-wider border-2 border-[#320070] text-[#320070]">
+          Go to Health Monitor <ArrowRight size={16} />
         </Link>
       </div>
     </div>

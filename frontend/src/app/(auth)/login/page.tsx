@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
 import api from '@/lib/api';
-import { ArrowLeft, Loader2 } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -29,34 +29,46 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background flex flex-col justify-center py-12 sm:px-6 lg:px-8 relative z-10">
-      <div className="absolute inset-0 overflow-hidden -z-10 pointer-events-none">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-primary/10 rounded-full blur-[100px]" />
+    <div className="min-h-[calc(100vh-76px)] bg-[#f8f7f5] flex">
+      {/* Left: Branding panel */}
+      <div className="hidden lg:flex lg:w-1/2 bg-[#320070] relative overflow-hidden items-center justify-center p-12 border-r-4 border-[#7100eb]">
+        <div className="absolute inset-0 opacity-[0.03] bg-[linear-gradient(to_right,#808080_1px,transparent_1px),linear-gradient(to_bottom,#808080_1px,transparent_1px)] bg-[size:24px_24px] pointer-events-none" />
+        
+        <div className="relative z-10 max-w-md space-y-6">
+          <div className="flex items-center gap-2.5">
+            <div className="w-10 h-10 rounded bg-[#95f4a0] border border-white text-[#320070] flex items-center justify-center font-black text-xl">C</div>
+            <span className="text-white font-extrabold text-2xl tracking-tight uppercase">CreditLens</span>
+          </div>
+          <h2 className="text-4xl font-extrabold text-white leading-tight">
+            Alternative underwriting that looks at <span className="text-[#95f4a0]">your context.</span>
+          </h2>
+          <p className="text-white/80 leading-relaxed font-medium">
+            Log in to evaluate transaction profiles, monitor financial standing, or customize score pathways instantly.
+          </p>
+          <div className="flex gap-6 pt-4 text-[#95f4a0] text-xs font-bold uppercase tracking-wider">
+            <span>✓ OCEN INTEGRATED</span>
+            <span>✓ REAL-TIME SCORING</span>
+          </div>
+        </div>
       </div>
 
-      <div className="sm:mx-auto sm:w-full sm:max-w-md animate-fade-in">
-        <Link href="/" className="inline-flex items-center text-sm font-medium text-secondary-foreground/60 hover:text-primary mb-8 transition-colors">
-          <ArrowLeft className="mr-2 h-4 w-4" />
-          Back to home
-        </Link>
-        <h2 className="mt-6 text-center text-3xl font-extrabold text-foreground">
-          Welcome back
-        </h2>
-        <p className="mt-2 text-center text-sm text-secondary-foreground/80">
-          Sign in to your CreditLens account
-        </p>
-      </div>
+      {/* Right: Form */}
+      <div className="flex-1 flex items-center justify-center p-6 sm:p-8">
+        <div className="w-full max-w-[420px] animate-fade-in card bg-white border-2 border-[#320070] shadow-[6px_6px_0px_0px_#320070] p-8">
+          <div className="mb-8 border-b-2 border-[#f8f7f5] pb-4">
+            <h1 className="text-2xl font-black uppercase tracking-tight text-[#320070]">Welcome back</h1>
+            <p className="text-[#64748B] text-xs font-bold uppercase tracking-wider mt-1">Sign in to your dashboard</p>
+          </div>
 
-      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md animate-fade-in delay-100">
-        <div className="card glass">
-          <form className="space-y-6" onSubmit={handleSubmit}>
+          <form className="space-y-5" onSubmit={handleSubmit}>
             {error && (
-              <div className="p-3 bg-danger/10 border border-danger/20 text-danger rounded-lg text-sm text-center">
+              <div className="px-4 py-3 rounded border-2 border-[#EF476F] bg-[#EF476F]/10 text-[#dc2626] text-xs font-bold uppercase tracking-wider">
                 {error}
               </div>
             )}
+            
             <div>
-              <label className="block text-sm font-medium mb-2">Email address</label>
+              <label className="label">Email Address</label>
               <input
                 type="email"
                 required
@@ -66,8 +78,9 @@ export default function LoginPage() {
                 placeholder="you@example.com"
               />
             </div>
+            
             <div>
-              <label className="block text-sm font-medium mb-2">Password</label>
+              <label className="label">Password</label>
               <input
                 type="password"
                 required
@@ -77,16 +90,18 @@ export default function LoginPage() {
                 placeholder="••••••••"
               />
             </div>
-            <button type="submit" className="btn btn-primary w-full py-3 text-lg" disabled={isLoading}>
-              {isLoading ? <Loader2 className="animate-spin" /> : 'Sign in'}
+            
+            <button type="submit" className="btn btn-primary w-full py-4 shadow-[3px_3px_0px_0px_rgba(0,0,0,0.15)] flex justify-center" disabled={isLoading}>
+              {isLoading ? <Loader2 size={20} className="animate-spin text-white" /> : 'Sign In'}
             </button>
           </form>
-          <div className="mt-6 text-center text-sm">
-            <span className="text-secondary-foreground/70">Don't have an account? </span>
-            <Link href="/register" className="font-medium text-primary hover:text-primary/80">
-              Sign up
+          
+          <p className="text-center text-xs font-bold uppercase tracking-wider text-[#64748B] mt-6">
+            Don't have an account?{' '}
+            <Link href="/register" className="text-[#7100eb] hover:underline">
+              Create one
             </Link>
-          </div>
+          </p>
         </div>
       </div>
     </div>

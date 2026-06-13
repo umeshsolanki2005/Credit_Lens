@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import api from '@/lib/api';
-import { Target, CheckCircle2, ArrowRight } from 'lucide-react';
+import { CheckCircle2, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 
 export default function RoadmapPage() {
@@ -34,59 +34,60 @@ export default function RoadmapPage() {
 
   if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[60vh]">
-        <div className="w-16 h-16 border-4 border-primary/20 border-t-primary rounded-full animate-spin mb-4"></div>
-        <p>Generating your personalized roadmap...</p>
+      <div className="flex flex-col items-center justify-center min-h-[60vh] bg-[#f8f7f5]">
+        <div className="w-16 h-16 border-4 border-[#ecebe8] border-t-[#7100eb] rounded-full animate-spin mb-4"></div>
+        <p className="text-[#64748B] text-xs font-bold uppercase tracking-wider">Generating your personalized roadmap...</p>
       </div>
     );
   }
 
   const timelines = [
-    { key: '3_months', title: '3-Month Plan', color: 'bg-primary' },
-    { key: '6_months', title: '6-Month Plan', color: 'bg-accent' },
-    { key: '12_months', title: '12-Month Plan', color: 'bg-purple-500' }
+    { key: '3_months', title: '3-Month Plan', color: '#320070', text: '#ffffff' },
+    { key: '6_months', title: '6-Month Plan', color: '#7100eb', text: '#ffffff' },
+    { key: '12_months', title: '12-Month Plan', color: '#95f4a0', text: '#06382e' }
   ];
 
   return (
-    <div className="max-w-3xl mx-auto animate-fade-in">
-      <div className="flex items-center gap-4 mb-8">
-        <div className="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center text-primary">
-          <Target size={24} />
-        </div>
-        <div>
-          <h1 className="text-3xl font-bold">Improvement Roadmap</h1>
-          <p className="text-secondary-foreground/70 text-sm">Actionable steps to boost your score</p>
-        </div>
-      </div>
+    <div className="space-y-8 animate-fade-in">
+      <header className="border-b-2 border-[#320070] pb-4">
+        <h1 className="text-3xl font-black uppercase tracking-tight text-[#320070]">Improvement Roadmap</h1>
+        <p className="text-[#64748B] text-xs font-bold uppercase tracking-wider mt-1">Actionable steps to boost your score</p>
+      </header>
 
-      <div className="space-y-8 relative before:absolute before:inset-0 before:ml-6 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-border before:to-transparent">
+      <div className="space-y-6">
         {timelines.map((timeline, index) => {
           const items = roadmap?.[timeline.key] || [];
           return (
-            <div key={timeline.key} className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active animate-fade-in" style={{ animationDelay: `${index * 150}ms` }}>
-              <div className={`flex items-center justify-center w-12 h-12 rounded-full border-4 border-background ${timeline.color} text-white shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 shadow-lg z-10`}>
-                <span className="font-bold">{index + 1}</span>
+            <div
+              key={timeline.key}
+              className="card bg-white border-2 border-[#320070] shadow-[6px_6px_0px_0px_#320070] p-6 animate-fade-in"
+              style={{ animationDelay: `${index * 150}ms` }}
+            >
+              <div className="flex items-center gap-3 mb-4">
+                <div
+                  className="w-9 h-9 rounded border-2 border-[#320070] flex items-center justify-center font-black text-xs shrink-0 shadow-[2px_2px_0px_0px_rgba(0,0,0,0.15)]"
+                  style={{ backgroundColor: timeline.color, color: timeline.text }}
+                >
+                  {index + 1}
+                </div>
+                <h3 className="font-black text-lg text-[#320070] uppercase tracking-tight">{timeline.title}</h3>
               </div>
-              
-              <div className="w-[calc(100%-4rem)] md:w-[calc(50%-3rem)] card glass p-6">
-                <h3 className="font-bold text-lg mb-4">{timeline.title}</h3>
-                <ul className="space-y-3">
-                  {items.map((item: string, idx: number) => (
-                    <li key={idx} className="flex items-start gap-2 text-sm text-secondary-foreground/80">
-                      <CheckCircle2 size={16} className="text-accent shrink-0 mt-0.5" />
-                      <span>{item}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
+              <ul className="space-y-3 ml-[48px]">
+                {items.map((item: string, idx: number) => (
+                  <li key={idx} className="flex items-start gap-3 text-xs font-semibold text-[#64748B] leading-relaxed">
+                    <CheckCircle2 size={16} className="shrink-0 mt-0.5" style={{ color: timeline.color === '#95f4a0' ? '#7100eb' : timeline.color }} />
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
             </div>
           );
         })}
       </div>
 
-      <div className="flex justify-center pt-12">
-        <Link href="/borrower/simulator" className="btn btn-primary text-lg px-8 py-3">
-          Try Loan Simulator <ArrowRight size={20} />
+      <div className="flex justify-center pt-4 border-t border-[#ecebe8]">
+        <Link href="/borrower/simulator" className="btn btn-primary px-8 py-4 shadow-[3px_3px_0px_0px_rgba(0,0,0,0.15)] flex justify-center hover:bg-[#7100eb]">
+          Try Loan Simulator <ArrowRight size={16} />
         </Link>
       </div>
     </div>

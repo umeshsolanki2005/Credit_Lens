@@ -35,63 +35,65 @@ export default function LenderDashboard() {
     fetchApplicants();
   }, [filter]);
 
-  const getRiskColor = (tier: string) => {
+  const getRiskBadge = (tier: string) => {
     switch (tier) {
-      case 'Green': return 'bg-accent/20 text-accent border-accent/30';
-      case 'Yellow': return 'bg-yellow-500/20 text-yellow-500 border-yellow-500/30';
-      case 'Red': return 'bg-danger/20 text-danger border-danger/30';
-      default: return 'bg-secondary text-secondary-foreground';
+      case 'Green': return 'badge badge-success';
+      case 'Yellow': return 'badge badge-warning';
+      case 'Red': return 'badge badge-danger';
+      default: return 'badge';
     }
   };
 
   return (
     <div className="space-y-8 animate-fade-in">
-      <header className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <header className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b-2 border-[#320070] pb-4">
         <div>
-          <h1 className="text-3xl font-bold">Applicant Pool</h1>
-          <p className="text-secondary-foreground/70 mt-1">
+          <h1 className="text-3xl font-black uppercase tracking-tight text-[#320070]">Applicant Pool</h1>
+          <p className="text-[#64748B] text-xs font-bold uppercase tracking-wider mt-1">
             Review borrowers who have selected your lending institution.
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <span className="text-sm font-medium text-secondary-foreground/70"><Filter size={16} className="inline mr-1"/> Risk Tier:</span>
-          {['All', 'Green', 'Yellow', 'Red'].map(tier => (
-            <button
-              key={tier}
-              onClick={() => setFilter(tier)}
-              className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
-                filter === tier 
-                  ? 'bg-primary text-white shadow-sm' 
-                  : 'bg-secondary text-secondary-foreground hover:bg-secondary/80'
-              }`}
-            >
-              {tier}
-            </button>
-          ))}
+          <span className="text-[10px] font-extrabold uppercase tracking-wider text-[#64748B]"><Filter size={12} className="inline mr-1"/>Risk:</span>
+          <div className="flex items-center gap-1 p-1 bg-[#ecebe8] border border-[#320070] rounded-sm">
+            {['All', 'Green', 'Yellow', 'Red'].map(tier => (
+              <button
+                key={tier}
+                onClick={() => setFilter(tier)}
+                className={`px-3 py-1 text-xs font-black uppercase tracking-wider rounded-sm transition-all border ${
+                  filter === tier 
+                    ? 'bg-[#320070] text-white border-[#320070]' 
+                    : 'text-[#320070] border-transparent hover:bg-white/40'
+                }`}
+              >
+                {tier}
+              </button>
+            ))}
+          </div>
         </div>
       </header>
 
       {/* Stats overview */}
-      <div className="grid md:grid-cols-4 gap-4">
-        <div className="card glass p-4 flex items-center justify-between">
+      <div className="grid md:grid-cols-4 gap-6">
+        <div className="card bg-white border-2 border-[#320070] shadow-[4px_4px_0px_0px_#320070] p-6 flex items-center justify-between">
           <div>
-            <p className="text-sm text-secondary-foreground/70 font-medium">Total Applicants</p>
-            <p className="text-2xl font-bold">{applicants.length}</p>
+            <p className="text-[10px] font-extrabold uppercase tracking-wider text-[#64748B] mb-1">Total Applicants</p>
+            <p className="text-3xl font-black text-[#320070]">{applicants.length}</p>
           </div>
-          <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+          <div className="w-10 h-10 rounded border-2 border-[#320070] bg-[#ecebe8] flex items-center justify-center text-[#320070]">
             <TrendingUp size={20} />
           </div>
         </div>
       </div>
 
-      <div className="card glass overflow-hidden">
-        <div className="p-4 border-b border-border flex justify-between items-center bg-card/50">
-          <div className="relative w-64">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-secondary-foreground/50" size={16} />
+      <div className="card bg-white border-2 border-[#320070] shadow-[6px_6px_0px_0px_#320070] p-0 overflow-hidden">
+        <div className="p-4 border-b-2 border-[#320070] flex justify-between items-center bg-[#f8f7f5]">
+          <div className="relative w-72">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[#320070]" size={14} />
             <input 
               type="text" 
               placeholder="Search applicants..." 
-              className="w-full pl-9 pr-4 py-2 bg-background border border-border rounded-lg text-sm focus:outline-none focus:border-primary transition-colors"
+              className="w-full pl-9 pr-4 py-2 bg-white border-2 border-[#320070] rounded-sm text-xs font-bold uppercase tracking-wider focus:outline-none focus:border-[#7100eb] transition-all"
             />
           </div>
         </div>
@@ -99,48 +101,48 @@ export default function LenderDashboard() {
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="border-b border-border text-sm text-secondary-foreground/70 uppercase tracking-wider">
-                <th className="p-4 font-medium">Applicant Name</th>
-                <th className="p-4 font-medium">CreditLens Score</th>
-                <th className="p-4 font-medium">Risk Tier</th>
-                <th className="p-4 font-medium">Action</th>
+              <tr className="border-b-2 border-[#320070] text-xs text-[#320070] font-black uppercase tracking-widest bg-[#ecebe8]">
+                <th className="px-6 py-4">Applicant Name</th>
+                <th className="px-6 py-4">CreditLens Score</th>
+                <th className="px-6 py-4">Risk Tier</th>
+                <th className="px-6 py-4 text-right">Action</th>
               </tr>
             </thead>
             <tbody>
               {loading ? (
                 <tr>
-                  <td colSpan={4} className="p-8 text-center text-secondary-foreground/60">
-                    <div className="inline-block w-6 h-6 border-2 border-primary/20 border-t-primary rounded-full animate-spin mb-2"></div>
-                    <p>Loading applicants...</p>
+                  <td colSpan={4} className="p-8 text-center text-[#64748B] bg-[#f8f7f5]">
+                    <div className="inline-block w-6 h-6 border-2 border-[#ecebe8] border-t-[#7100eb] rounded-full animate-spin mb-2"></div>
+                    <p className="text-xs font-bold uppercase tracking-wider">Loading applicants...</p>
                   </td>
                 </tr>
               ) : applicants.length === 0 ? (
                 <tr>
-                  <td colSpan={4} className="p-8 text-center text-secondary-foreground/60">
+                  <td colSpan={4} className="p-8 text-center text-[#64748B] text-xs font-bold uppercase tracking-wider bg-[#f8f7f5]">
                     No applicants found for the selected filter.
                   </td>
                 </tr>
               ) : (
                 applicants.map((applicant) => (
-                  <tr key={applicant.id} className="border-b border-border/50 hover:bg-secondary/20 transition-colors group">
-                    <td className="p-4">
-                      <p className="font-medium text-foreground">{applicant.name}</p>
-                      <p className="text-sm text-secondary-foreground/70">{applicant.email}</p>
+                  <tr key={applicant.id} className="border-b border-[#ecebe8] hover:bg-[#f8f7f5] transition-colors group">
+                    <td className="px-6 py-4">
+                      <p className="font-black text-sm uppercase tracking-wider text-[#320070]">{applicant.name}</p>
+                      <p className="text-[10px] font-bold text-[#64748B] mt-0.5">{applicant.email}</p>
                     </td>
-                    <td className="p-4 font-bold">
+                    <td className="px-6 py-4 font-black text-lg text-[#320070]">
                       {applicant.score}
                     </td>
-                    <td className="p-4">
-                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${getRiskColor(applicant.risk_tier)}`}>
+                    <td className="px-6 py-4">
+                      <span className={getRiskBadge(applicant.risk_tier)}>
                         {applicant.risk_tier}
                       </span>
                     </td>
-                    <td className="p-4">
+                    <td className="px-6 py-4 text-right">
                       <Link 
                         href={`/lender/applicant/${applicant.id}`}
-                        className="inline-flex items-center text-sm font-medium text-primary hover:underline"
+                        className="inline-flex items-center text-xs font-black uppercase tracking-wider text-[#7100eb] hover:text-[#320070] transition-colors"
                       >
-                        View Profile <ArrowRight size={16} className="ml-1 opacity-0 group-hover:opacity-100 transition-all -translate-x-2 group-hover:translate-x-0" />
+                        View Profile <ArrowRight size={14} className="ml-1 opacity-0 group-hover:opacity-100 transition-all -translate-x-2 group-hover:translate-x-0" />
                       </Link>
                     </td>
                   </tr>
