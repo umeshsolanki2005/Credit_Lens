@@ -1,5 +1,5 @@
 fastapi
-uvicorn
+uvicorn[standard]
 pandas
 numpy
 xgboost
@@ -7,11 +7,12 @@ shap
 scikit-learn
 joblib
 faker
-python-jose
-passlib
+python-jose[cryptography]
+passlib[bcrypt]
 bcrypt==3.2.2
 psycopg2-binary
 python-multipart
 sqlalchemy
 email-validator
 python-dotenv
+cryptography
