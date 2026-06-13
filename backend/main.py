@@ -1,10 +1,21 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, UploadFile, File, HTTPException, Depends
+import io
 import joblib
 import pandas as pd
 import numpy as np
 import shap
 from pydantic import BaseModel
+from fastapi.middleware.cors import CORSMiddleware
+
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 from roadmap import generate_roadmap
 
@@ -28,22 +39,6 @@ credit_columns = joblib.load('ml_models/feature_columns.pkl')
 loan_model = joblib.load('ml_models/loan_eligibility_model.pkl')
 loan_columns = joblib.load('ml_models/loan_feature_columns.pkl')
 
-class UserInput(BaseModel):
-    amt_income_total: float
-    amt_credit: float
-    amt_annuity: float
-    days_birth: int
-    days_employed: int
-    ext_source_2: float
-    ext_source_3: float
-
-class LoanInput(BaseModel):
-    credit_score: float
-    loan_amnt: float
-    term: int
-    annual_inc: float
-    dti: float
-
 class RoadmapInput(BaseModel):
     hurting: list
 
@@ -66,13 +61,44 @@ def lender_dashboard(
 ):
     return current_user
 
+@app.post("/upload")
+async def upload_document(
+    file: UploadFile = File(...),
+    db: Session = Depends(get_db),
+    current_user = Depends(get_current_borrower)
+):
+    contents = await file.read()
+    df = pd.read_csv(io.StringIO(contents.decode('utf-8')))
+    
+    amt_credit = df[df['Type'] == 'Credit']['Amount'].sum()
+    amt_annuity = df[df['Type'] == 'Debit']['Amount'].mean() if len(df[df['Type'] == 'Debit']) > 0 else 0
+    
+    db_user = db.query(User).filter(User.id == current_user["id"]).first()
+    if db_user:
+        db_user.amt_credit = int(amt_credit)
+        db_user.amt_annuity = int(amt_annuity)
+        db.commit()
+    
+    return {"message": "Document processed successfully", "amt_credit": amt_credit, "amt_annuity": amt_annuity}
+
 @app.post('/score')
 def get_credit_score(
-    input: UserInput,
     db: Session = Depends(get_db),
     current_user=Depends(get_current_borrower)
 ):
-    input_data = pd.DataFrame([input.dict()])
+    db_user = db.query(User).filter(User.id == current_user["id"]).first()
+    if not db_user:
+        raise HTTPException(status_code=404, detail="User not found")
+        
+    input_data = pd.DataFrame([{
+        "AMT_INCOME_TOTAL": db_user.income or 180000,
+        "AMT_CREDIT": db_user.amt_credit or 450000,
+        "AMT_ANNUITY": db_user.amt_annuity or 22500,
+        "DAYS_BIRTH": (db_user.age * -365) if db_user.age else -12000,
+        "DAYS_EMPLOYED": (db_user.employment_days * -1) if db_user.employment_days else -2000,
+        "EXT_SOURCE_2": 0.65 if (db_user.income or 180000) > 200000 else 0.3,
+        "EXT_SOURCE_3": 0.55
+    }])
 
     for col in credit_columns:
         if col not in input_data.columns:
@@ -99,8 +125,23 @@ def get_credit_score(
 
 
 @app.post('/explain')
-def explain_score(input: UserInput):
-    input_data = pd.DataFrame([input.dict()])
+def explain_score(
+    db: Session = Depends(get_db),
+    current_user=Depends(get_current_borrower)
+):
+    db_user = db.query(User).filter(User.id == current_user["id"]).first()
+    if not db_user:
+        raise HTTPException(status_code=404, detail="User not found")
+        
+    input_data = pd.DataFrame([{
+        "AMT_INCOME_TOTAL": db_user.income or 180000,
+        "AMT_CREDIT": db_user.amt_credit or 450000,
+        "AMT_ANNUITY": db_user.amt_annuity or 22500,
+        "DAYS_BIRTH": (db_user.age * -365) if db_user.age else -12000,
+        "DAYS_EMPLOYED": (db_user.employment_days * -1) if db_user.employment_days else -2000,
+        "EXT_SOURCE_2": 0.65 if (db_user.income or 180000) > 200000 else 0.3,
+        "EXT_SOURCE_3": 0.55
+    }])
 
     for col in credit_columns:
         if col not in input_data.columns:
@@ -137,12 +178,37 @@ def explain_score(input: UserInput):
     }
 
 
+class LoanInput(BaseModel):
+    loan_amnt: float
+    term: int
+
 @app.post("/eligibility")
-def check_eligibility(input: LoanInput):
-    input_data = pd.DataFrame([input.dict()])
+def check_eligibility(
+    input: LoanInput,
+    db: Session = Depends(get_db),
+    current_user=Depends(get_current_borrower)
+):
+    db_user = db.query(User).filter(User.id == current_user["id"]).first()
+    if not db_user:
+        raise HTTPException(status_code=404, detail="User not found")
+        
+    latest_score = db.query(Score).filter(Score.user_id == current_user["id"]).order_by(Score.timestamp.desc()).first()
+    score_val = latest_score.score if latest_score else 600.0
+    annual_inc = db_user.income or 0.0
+    dti = (db_user.amt_annuity / (annual_inc / 12)) if annual_inc > 0 else 0.0
+
+    input_data = pd.DataFrame([{
+        "credit_score": score_val,
+        "loan_amnt": input.loan_amnt,
+        "term": input.term,
+        "annual_inc": annual_inc,
+        "dti": dti
+    }])
+    
     for col in loan_columns:
         if col not in input_data.columns:
             input_data[col] = 0
+            
     input_data = input_data[loan_columns]
     prob = float(loan_model.predict_proba(input_data)[:, 1][0])
     eligible = prob < 0.3

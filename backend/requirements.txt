@@ -9,5 +9,11 @@ joblib
 faker
 python-jose
 passlib
+bcrypt==3.2.2
 psycopg2-binary
 python-multipart
+sqlalchemy
+email-validator
+python-dotenv
+openai
+google-generativeai

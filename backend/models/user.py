@@ -23,6 +23,15 @@ class User(Base):
         server_default=func.now()
     )
 
+    # Borrower profile data
+    income = Column(Integer, nullable=True)
+    employment_days = Column(Integer, nullable=True)
+    age = Column(Integer, nullable=True)
+
+    # Extracted from CSV
+    amt_credit = Column(Integer, nullable=True, default=0)
+    amt_annuity = Column(Integer, nullable=True, default=0)
+
 
 scores = relationship(
     "Score",

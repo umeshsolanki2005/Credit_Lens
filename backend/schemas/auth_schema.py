@@ -11,3 +11,9 @@ class UserRegister(BaseModel):
 class UserLogin(BaseModel):
     email: EmailStr
     password: str
+
+
+class UserProfileUpdate(BaseModel):
+    income: int
+    employment_days: int
+    age: int

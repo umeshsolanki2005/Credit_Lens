@@ -134,8 +134,41 @@ def get_applicants(
                 "name": borrower.name,
                 "email": borrower.email,
                 "score": float(latest_score.score),
-                "risk_tier": tier
+                "risk_tier": tier,
+                "income": borrower.income or 0,
+                "employment_days": borrower.employment_days or 0
             }
         )
 
     return applicants
+
+@router.get("/applicant/{applicant_id}")
+def get_applicant(
+    applicant_id: int,
+    db: Session = Depends(get_db),
+    current_user=Depends(get_current_lender)
+):
+    selection = db.query(LenderSelection).filter(
+        LenderSelection.lender_id == current_user["id"],
+        LenderSelection.borrower_id == applicant_id
+    ).first()
+    
+    if not selection:
+        raise HTTPException(status_code=403, detail="Not authorized to view this applicant")
+        
+    borrower = db.query(User).filter(User.id == applicant_id).first()
+    latest_score = db.query(Score).filter(Score.user_id == applicant_id).order_by(Score.timestamp.desc()).first()
+    
+    return {
+        "id": borrower.id,
+        "name": borrower.name,
+        "email": borrower.email,
+        "score": float(latest_score.score) if latest_score else 600,
+        "risk_tier": get_risk_tier(latest_score.score) if latest_score else "Yellow",
+        "income": f"₹ {borrower.income or 0} / year",
+        "employment": f"{borrower.employment_days or 0} days",
+        "explainData": {
+            "helping": [{"feature": "INCOME", "impact": -1.2}],
+            "hurting": [{"feature": "CREDIT", "impact": 0.5}]
+        }
+    }
