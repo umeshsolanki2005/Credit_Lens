@@ -12,9 +12,11 @@ export default function RoadmapPage() {
   useEffect(() => {
     const fetchRoadmap = async () => {
       try {
-        // Mocking the hurting features since we didn't pass them via context
-        const hurting = ['EXT_SOURCE_2', 'DAYS_EMPLOYED'];
-        const { data } = await api.post('/roadmap', { hurting });
+        // Fetch explain data to get actual hurting features
+        const explainRes = await api.post('/explain');
+        const hurtingFeatures = explainRes.data.hurting.map((h: any) => h.feature);
+        
+        const { data } = await api.post('/roadmap', { hurting: hurtingFeatures });
         setRoadmap(data);
       } catch (err) {
         console.error('Failed to fetch roadmap', err);

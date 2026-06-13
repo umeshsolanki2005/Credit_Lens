@@ -10,6 +10,40 @@ from auth.oauth2 import (
 from models.user import User
 from models.lender_selection import LenderSelection
 from models.score import Score
+import joblib
+import shap
+import pandas as pd
+
+credit_model = joblib.load("ml_models/credit_score_model.pkl")
+credit_columns = joblib.load("ml_models/feature_columns.pkl")
+
+def generate_explain_data(db_user):
+    input_data = pd.DataFrame([{
+        "AMT_INCOME_TOTAL": db_user.income or 180000,
+        "AMT_CREDIT": db_user.amt_credit or 450000,
+        "AMT_ANNUITY": db_user.amt_annuity or 22500,
+        "DAYS_BIRTH": (db_user.age * -365) if db_user.age else -12000,
+        "DAYS_EMPLOYED": (db_user.employment_days * -1) if db_user.employment_days else -2000,
+        "EXT_SOURCE_2": db_user.ext_source_2 or 0.5,
+        "EXT_SOURCE_3": db_user.ext_source_3 or 0.5
+    }])
+
+    for col in credit_columns:
+        if col not in input_data.columns:
+            input_data[col] = 0
+
+    input_data = input_data[credit_columns]
+    explainer = shap.TreeExplainer(credit_model)
+    shap_values = explainer.shap_values(input_data)[0]
+    shap_series = pd.Series(shap_values, index=credit_columns)
+
+    helping = shap_series.nsmallest(3).reset_index().values.tolist()
+    hurting = shap_series.nlargest(3).reset_index().values.tolist()
+
+    return {
+        "helping": [{"feature": f, "impact": round(float(v), 2)} for f, v in helping],
+        "hurting": [{"feature": f, "impact": round(float(v), 2)} for f, v in hurting]
+    }
 
 router = APIRouter(
     prefix="/lender",
@@ -133,7 +167,7 @@ def get_applicants(
                 "id": borrower.id,
                 "name": borrower.name,
                 "email": borrower.email,
-                "score": float(latest_score.score),
+                "score": round(float(latest_score.score)),
                 "risk_tier": tier,
                 "income": borrower.income or 0,
                 "employment_days": borrower.employment_days or 0,
@@ -164,20 +198,11 @@ def get_applicant(
         "id": borrower.id,
         "name": borrower.name,
         "email": borrower.email,
-        "score": round(float(latest_score.score), 1),
+        "score": round(float(latest_score.score)),
         "risk_tier": get_risk_tier(latest_score.score) if latest_score else "Yellow",
         "income": f"₹ {borrower.income or 0} / year",
         "employment": f"{borrower.employment_days or 0} days",
-        "explainData": {
-            "helping": [
-                {"feature": "EXT_SOURCE_2", "impact": -0.38},
-                {"feature": "AMT_ANNUITY", "impact": -0.29}
-            ],
-            "hurting": [
-                {"feature": "DAYS_EMPLOYED", "impact": 0.44},
-                {"feature": "AMT_CREDIT", "impact": 0.21}
-            ]
-        }
+        "explainData": generate_explain_data(borrower)
     }
 
 @router.post("/applicant/{applicant_id}/accept")

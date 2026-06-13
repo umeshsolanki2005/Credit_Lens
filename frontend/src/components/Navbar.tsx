@@ -48,8 +48,7 @@ export default function Navbar() {
             <div className="hidden md:flex items-center gap-8">
               <a href="#features" className="text-xs font-bold uppercase tracking-wider text-white/80 hover:text-[#95f4a0] transition-colors">Features</a>
               <a href="#how-it-works" className="text-xs font-bold uppercase tracking-wider text-white/80 hover:text-[#95f4a0] transition-colors">How it Works</a>
-              <a href="#for-lenders" className="text-xs font-bold uppercase tracking-wider text-white/80 hover:text-[#95f4a0] transition-colors">For Lenders</a>
-            </div>
+                  </div>
           )}
 
           {/* Right side */}

@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import api from '@/lib/api';
+import toast from 'react-hot-toast';
 import { CheckCircle2, XCircle, ArrowRight, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -117,10 +118,17 @@ export default function SimulatorPage() {
                   <button 
                     onClick={async () => {
                       try {
-                        await api.post('/lender/select/2');
-                        alert('Application submitted to lenders successfully!');
+                        const { data: lenders } = await api.get('/lenders');
+                        for (const lender of lenders) {
+                          try {
+                            await api.post(`/lender/select/${lender.id}`);
+                          } catch (err) {
+                            // Ignore if already applied
+                          }
+                        }
+                        toast.success('Application submitted to lenders successfully!');
                       } catch (err) {
-                        alert('Application submitted or already exists.');
+                        toast.error('Failed to submit application.');
                       }
                     }}
                     className="btn btn-accent w-full py-4 text-xs font-black uppercase tracking-wider mt-4 shadow-[3px_3px_0px_0px_rgba(50,0,112,0.15)]"

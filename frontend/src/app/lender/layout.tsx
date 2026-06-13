@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LayoutDashboard, Users, Settings, LogOut, Briefcase, ChevronRight } from 'lucide-react';
+import { LayoutDashboard, Users, LogOut, ChevronRight } from 'lucide-react';
 
 export default function LenderLayout({ children }: { children: React.ReactNode }) {
   const { user, loading, logout } = useAuth();
@@ -28,8 +28,6 @@ export default function LenderLayout({ children }: { children: React.ReactNode }
 
   const navItems = [
     { href: '/lender/dashboard', label: 'Applicant Pool', icon: LayoutDashboard },
-    { href: '#', label: 'Portfolios', icon: Briefcase },
-    { href: '#', label: 'Settings', icon: Settings },
   ];
 
   return (

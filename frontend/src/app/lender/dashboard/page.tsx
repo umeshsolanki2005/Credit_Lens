@@ -11,6 +11,7 @@ interface Applicant {
   email: string;
   score: number;
   risk_tier: 'Green' | 'Yellow' | 'Red';
+  status: string;
 }
 
 export default function LenderDashboard() {
@@ -105,6 +106,7 @@ export default function LenderDashboard() {
                 <th className="px-6 py-4">Applicant Name</th>
                 <th className="px-6 py-4">CreditLens Score</th>
                 <th className="px-6 py-4">Risk Tier</th>
+                <th className="px-6 py-4">Status</th>
                 <th className="px-6 py-4 text-right">Action</th>
               </tr>
             </thead>
@@ -135,6 +137,15 @@ export default function LenderDashboard() {
                     <td className="px-6 py-4">
                       <span className={getRiskBadge(applicant.risk_tier)}>
                         {applicant.risk_tier}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4">
+                      <span className={`px-2.5 py-1 text-[10px] font-black uppercase tracking-wider rounded-sm ${
+                        applicant.status === 'accepted' ? 'bg-[#95f4a0]/20 text-[#059669] border border-[#059669]/20' :
+                        applicant.status === 'rejected' ? 'bg-[#EF476F]/10 text-[#EF476F] border border-[#EF476F]/20' :
+                        'bg-[#ecebe8] text-[#64748B] border border-[#d1cfc8]'
+                      }`}>
+                        {applicant.status}
                       </span>
                     </td>
                     <td className="px-6 py-4 text-right">

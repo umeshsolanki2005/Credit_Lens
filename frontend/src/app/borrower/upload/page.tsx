@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { UploadCloud, FileText, Loader2 } from 'lucide-react';
 import api from '@/lib/api';
+import { toast } from 'react-hot-toast';
 
 export default function UploadPage() {
   const router = useRouter();
@@ -31,7 +32,7 @@ export default function UploadPage() {
       router.push('/borrower/score');
     } catch (err) {
       console.error(err);
-      alert('Failed to process document');
+      toast.error('Failed to process document');
     } finally {
       setIsUploading(false);
     }

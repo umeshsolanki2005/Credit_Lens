@@ -2,7 +2,7 @@
 
 import { useAuth } from '@/context/AuthContext';
 import Link from 'next/link';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, Bell, FileText } from 'lucide-react';
 
 export default function BorrowerDashboard() {
   const { user } = useAuth();
@@ -16,8 +16,21 @@ export default function BorrowerDashboard() {
         </p>
       </header>
 
-      <div className="grid md:grid-cols-3 gap-6">
-        <div className="card bg-white border-2 border-[#320070] shadow-[4px_4px_0px_0px_#320070] hover:shadow-[6px_6px_0px_0px_#7100eb] transition-all p-6 hover:-translate-y-0.5">
+      <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="card bg-white border-2 border-[#320070] shadow-[4px_4px_0px_0px_#320070] hover:shadow-[6px_6px_0px_0px_#7100eb] transition-all p-6 hover:-translate-y-0.5 flex flex-col h-full">
+          <div className="w-9 h-9 rounded bg-[#ecebe8] border border-[#320070] flex items-center justify-center text-[#320070] font-black text-xs mb-4">
+            <FileText size={16} />
+          </div>
+          <h3 className="text-lg font-black uppercase tracking-tight text-[#320070] mb-2">Applications</h3>
+          <p className="text-xs font-semibold text-[#64748B] leading-relaxed mb-6 flex-grow">
+            Track the live status of your submitted loan applications.
+          </p>
+          <Link href="/borrower/applications" className="inline-flex items-center text-xs font-black uppercase tracking-wider text-[#7100eb] hover:text-[#320070] transition-all mt-auto">
+            View Status <ArrowRight size={14} className="ml-1" />
+          </Link>
+        </div>
+
+        <div className="card bg-white border-2 border-[#320070] shadow-[4px_4px_0px_0px_#320070] hover:shadow-[6px_6px_0px_0px_#7100eb] transition-all p-6 hover:-translate-y-0.5 flex flex-col h-full">
           <div className="w-9 h-9 rounded bg-[#ecebe8] border border-[#320070] flex items-center justify-center text-[#320070] font-black text-xs mb-4">
             1
           </div>
@@ -38,7 +51,7 @@ export default function BorrowerDashboard() {
           <p className="text-xs font-semibold text-[#64748B] leading-relaxed mb-6 min-h-[48px]">
             Securely connect your bank account or upload UPI statements.
           </p>
-          <Link href="/borrower/upload" className="inline-flex items-center text-xs font-black uppercase tracking-wider text-[#7100eb] hover:text-[#320070] transition-all">
+          <Link href="/borrower/upload" className="inline-flex items-center text-xs font-black uppercase tracking-wider text-[#7100eb] hover:text-[#320070] transition-all mt-auto">
             Upload Data <ArrowRight size={14} className="ml-1" />
           </Link>
         </div>
@@ -51,7 +64,7 @@ export default function BorrowerDashboard() {
           <p className="text-xs font-semibold text-[#64748B] leading-relaxed mb-6 min-h-[48px]">
             Discover your alternative credit score and what's affecting it.
           </p>
-          <Link href="/borrower/score" className="inline-flex items-center text-xs font-black uppercase tracking-wider text-[#7100eb] hover:text-[#320070] transition-all">
+          <Link href="/borrower/score" className="inline-flex items-center text-xs font-black uppercase tracking-wider text-[#7100eb] hover:text-[#320070] transition-all mt-auto">
             View Score <ArrowRight size={14} className="ml-1" />
           </Link>
         </div>

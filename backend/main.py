@@ -11,7 +11,7 @@ app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=["http://localhost:3000", "http://127.0.0.1:3000"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -126,14 +126,14 @@ def get_credit_score(
 
     new_score = Score(
         user_id=current_user["id"],
-        score=float(score)
+        score=round(float(score))
     )
 
     db.add(new_score)
     db.commit()
 
     return {
-        "credit_score": float(score),
+        "credit_score": round(float(score)),
         "status": "ok"
     }
 
@@ -269,3 +269,8 @@ def get_notifications(
             "status": s.status or "pending"
         })
     return results
+
+@app.get("/lenders")
+def get_all_lenders(db: Session = Depends(get_db)):
+    lenders = db.query(User).filter(User.role == "lender").all()
+    return [{"id": l.id, "name": l.name} for l in lenders]

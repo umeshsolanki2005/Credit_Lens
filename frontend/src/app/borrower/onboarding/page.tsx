@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { ArrowRight } from 'lucide-react';
 import api from '@/lib/api';
+import toast from 'react-hot-toast';
 
 export default function OnboardingPage() {
   const router = useRouter();
@@ -24,7 +25,7 @@ export default function OnboardingPage() {
       router.push('/borrower/upload');
     } catch (err) {
       console.error(err);
-      alert('Failed to save profile');
+      toast.error('Failed to save profile');
     }
   };
 
