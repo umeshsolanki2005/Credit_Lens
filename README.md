@@ -1,4 +1,4 @@
-# CreditLens .
+# CreditLens ..
 
 CreditLens is an alternative credit scoring platform designed to empower thin-file borrowers in India. By analyzing alternative data points like UPI transaction history and telecommunications data, CreditLens generates an ML-based credit score and connects borrowers directly with potential lenders.
 
